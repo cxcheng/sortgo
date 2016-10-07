@@ -16,5 +16,5 @@ func main() {
 
    sortData = sortlib.NewSortData(data)
    sortlib.QuickSort(sortData)
-   sortData.Print("Quick Sort")
+   sortData.Print("Quick Sort- pivot in red")
 }

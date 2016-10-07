@@ -1,9 +1,7 @@
 package sortlib
 
-import (
-    "fmt"
-    "math"
-)
+import _ "fmt"
+import "math"
 
 func BubbleSort(s *SortData) {
     n := len(s.data)
@@ -28,7 +26,7 @@ func partition(s *SortData, lo int, hi int) int {
     data := s.data
     pivot := data[lo]
     i, j, partition_size := lo, hi - 1, hi - lo
-    comment := fmt.Sprintf("pivot %d", pivot)
+    comment := ""
     redIndexes := []int{ lo }
     blueIndexes := make([]int, partition_size, partition_size)
     for m := 0; m < partition_size; m++ {
@@ -57,6 +55,12 @@ func partition(s *SortData, lo int, hi int) int {
                     break
                 }
                 k++
+            }
+            for m := lo; m < hi; m++ {
+                if data[m] == pivot {
+                    redIndexes[0] = m
+                    break
+                }
             }
             s.addSnapshot(redIndexes, blueIndexes, comment)
         } else {

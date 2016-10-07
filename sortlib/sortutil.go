@@ -100,11 +100,14 @@ func (s *SortData) addSnapshot(
     redIndexes []int, blueIndexes []int, comment string) *SortSnapshot {
     snapshot := &SortSnapshot {
         data: make([]int, len(s.data), len(s.data)),
-        redIndexes: redIndexes, blueIndexes: blueIndexes,
+        redIndexes: make([]int, len(redIndexes), len(redIndexes)),
+        blueIndexes: make([]int, len(blueIndexes), len(blueIndexes)),
         comment: comment,
     }
     // make a copy of the data, but only keep references to indexes
     copy(snapshot.data, s.data)
+    copy(snapshot.redIndexes, redIndexes)
+    copy(snapshot.blueIndexes, blueIndexes)
     s.snapshots = append(s.snapshots, *snapshot)
     return snapshot
 }
