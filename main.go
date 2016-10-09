@@ -8,13 +8,16 @@ package main
 import sortlib "github.com/cxcheng/sortgo/sortlib"
 
 func main() {
-   data := sortlib.GenerateNumbers(10, 999)
+    var data sortlib.ISortData
+    var ctx sortlib.SortCtx
 
-   sortData := sortlib.NewSortData(data)
-   sortlib.BubbleSort(sortData)
-   sortData.Print("Bubble Sort")
+    data = sortlib.NewISortData(10, 999)
 
-   sortData = sortlib.NewSortData(data)
-   sortlib.QuickSort(sortData)
-   sortData.Print("Quick Sort- pivot in red")
+    ctx = sortlib.NewSortCtx()
+    sortlib.Bubblesort(ctx, data)
+    ctx.Print()
+
+    ctx = sortlib.NewSortCtx()
+    sortlib.Quicksort(ctx, data)
+    ctx.Print()
 }
