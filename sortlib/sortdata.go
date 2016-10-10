@@ -6,12 +6,12 @@ import "math/rand"
 import "time"
 
 type SortData interface {
-    copy() SortData
+    Copy() SortData
     Len() int
-    swap(i int, j int)
+    Swap(i int, j int)
     Lt(i int, j int) bool
     Gt(i int, j int) bool
-    print(highlights map[int]int)
+    Print(highlights map[int]int)
 }
 
 type ISortData struct {
@@ -29,7 +29,7 @@ func NewISortData(num int, max int) ISortData {
     return ISortData{ max: max, vals: vals }
 }
 
-func (s ISortData) copy() SortData {
+func (s ISortData) Copy() SortData {
     // create a copy of the ISortData
     t := ISortData{}
     t.max = s.max
@@ -46,10 +46,6 @@ func (s ISortData) Len() int {
     return len(s.vals)
 }
 
-func (s ISortData) swap(i int, j int) {
-    s.vals[i], s.vals[j] = s.vals[j], s.vals[i]
-}
-
 func (s ISortData) Lt(i int, j int) bool {
     return s.vals[i] < s.vals[j]
 }
@@ -58,7 +54,11 @@ func (s ISortData) Gt(i int, j int) bool {
     return s.vals[i] > s.vals[j]
 }
 
-func (s ISortData) print(highlights map[int]int) {
+func (s ISortData) Swap(i int, j int) {
+    s.vals[i], s.vals[j] = s.vals[j], s.vals[i]
+}
+
+func (s ISortData) Print(highlights map[int]int) {
     const TEXT_RESET = "\033[0m"
     const TEXT_BOLD = "\033[1m"
     const TEXT_RED = "\033[31m"

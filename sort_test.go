@@ -13,7 +13,7 @@ func verifySorted(t *testing.T, sorted *sortlib.SortData) {
     }
 }
 
-func TestBubbleSort(t *testing.T) {
+func TestBubblesort(t *testing.T) {
     var data sortlib.SortData
     var ctx sortlib.SortCtx
 
@@ -22,8 +22,51 @@ func TestBubbleSort(t *testing.T) {
 
     // perform bubble sort
     ctx = sortlib.NewSortCtx()
-    sortlib.Bubblesort(&ctx, data)
+    sortlib.Bubblesort(&ctx, data, true)
 
     // check results
     verifySorted(t, ctx.SortedData())
+}
+
+func TestQuicksort(t *testing.T) {
+    var data sortlib.SortData
+    var ctx sortlib.SortCtx
+
+    // generate array of random integers
+    data = sortlib.NewISortData(10, 999)
+
+    // perform bubble sort
+    ctx = sortlib.NewSortCtx()
+    sortlib.Quicksort(&ctx, data, true)
+
+    // check results
+    verifySorted(t, ctx.SortedData())
+}
+
+func BenchmarkBubblesort(b *testing.B) {
+    var data sortlib.SortData
+    var ctx sortlib.SortCtx
+
+    // generate array of random integers
+    data = sortlib.NewISortData(50000, 999)
+
+    // perform bubble sort
+    ctx = sortlib.NewSortCtx()
+    b.StartTimer()
+    sortlib.Bubblesort(&ctx, data, false)
+    b.StopTimer()
+}
+
+func BenchmarkQuicksort(b *testing.B) {
+    var data sortlib.SortData
+    var ctx sortlib.SortCtx
+
+    // generate array of random integers
+    data = sortlib.NewISortData(50000, 999)
+
+    // perform bubble sort
+    ctx = sortlib.NewSortCtx()
+    b.StartTimer()
+    sortlib.Quicksort(&ctx, data, false)
+    b.StopTimer()
 }

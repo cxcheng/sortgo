@@ -16,11 +16,11 @@ func main() {
 
     // perform bubble sort
     ctx = sortlib.NewSortCtx()
-    sortlib.Bubblesort(&ctx, data)
+    sortlib.Bubblesort(&ctx, data.Copy(), true)
     ctx.Print()
 
     // perform quicksort
     ctx = sortlib.NewSortCtx()
-    sortlib.Quicksort(&ctx, data)
+    sortlib.Quicksort(&ctx, data.Copy(), true)
     ctx.Print()
 }

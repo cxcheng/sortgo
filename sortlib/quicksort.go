@@ -2,14 +2,12 @@ package sortlib
 
 import "math"
 
-func findPartition(ctx *SortCtx, data SortData, lo int, hi int) int {
+func findPartition(ctx *SortCtx, data SortData,
+    lo int, hi int, snapShots bool) int {
     // choose pivot using Hoare partition scheme
     pivotIndex := lo
     i, j, partition_size := lo, hi - 1, hi - lo
-    highlights := make(map[int]int)
-    for m := 0; m < partition_size; m++ {
-        highlights[lo + m] = 3
-    }
+
     for {
         for data.Lt(i, pivotIndex) {
             // skip if already on the right side (< pivot)
@@ -22,43 +20,43 @@ func findPartition(ctx *SortCtx, data SortData, lo int, hi int) int {
             j--
         }
         if i < j {
-            data.swap(i, j)
+            data.Swap(i, j)
             ctx.numberSwaps++
             if i == pivotIndex {
                 pivotIndex = j
             } else if j == pivotIndex {
                 pivotIndex = i
             }
-            // k := i
-            // for k < j {
-            //     if data[k] == pivot {
-            //         break
-            //     }
-            //     k++
-            // }
-            // mark the swapped values red and add snapshot
-            highlights[i], highlights[j] = 2, 2
-            ctx.addSnapshot(data, highlights)
+            if snapShots {
+                highlights := make(map[int]int)
+                for m := 0; m < partition_size; m++ {
+                    highlights[lo + m] = 3
+                }
+                // mark the swapped values red and add snapshot
+                highlights[i], highlights[j] = 2, 2
+                ctx.addSnapshot(data, highlights)
+            }
         } else {
             break // we are done when the two indexes touch
         }
     }
-    ctx.addSnapshot(data, highlights)
+    ctx.addSnapshot(data, make(map[int]int))
     return i
 }
 
-func quicksortPartition(ctx *SortCtx, data SortData, lo int, hi int) {
+func quicksortPartition(ctx *SortCtx, data SortData,
+    lo int, hi int, snapShots bool) {
    if lo < hi {
-       p := findPartition(ctx, data, lo, hi)
-       quicksortPartition(ctx, data, lo, p)
-       quicksortPartition(ctx, data, p + 1, hi)
+       p := findPartition(ctx, data, lo, hi, snapShots)
+       quicksortPartition(ctx, data, lo, p, snapShots)
+       quicksortPartition(ctx, data, p + 1, hi, snapShots)
    }
 }
 
-func Quicksort(ctx *SortCtx, data SortData) {
+func Quicksort(ctx *SortCtx, data SortData, snapShots bool) {
     ctx.title = "Quick Sort"
     n := data.Len()
     ctx.expectedOps = int(float64(n) * math.Log(float64(n))) // O(n lg n)
-    quicksortPartition(ctx, data, 0, n)
+    quicksortPartition(ctx, data, 0, n, snapShots)
 }
 

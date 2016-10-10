@@ -24,7 +24,7 @@ func NewSortCtx() SortCtx {
 
 func (s *SortCtx) addSnapshot(data SortData, highlights map[int]int) *SortSnapshot {
     snapshot := new(SortSnapshot)
-    snapshot.data = data.copy()
+    snapshot.data = data.Copy()
 
     // copy the highlights
     snapshot.highlights = make(map[int]int)
@@ -49,7 +49,7 @@ func (s *SortCtx) Print() {
     fmt.Println(s.title)
     for time, snapshot := range s.snapshots {
         fmt.Printf("%3d:", time)
-        snapshot.data.print(snapshot.highlights)
+        snapshot.data.Print(snapshot.highlights)
     }
     fmt.Printf("Total: %d compares %d swaps, expected %d\n",
         s.numberCompares, s.numberSwaps, s.expectedOps)
