@@ -2,7 +2,7 @@ package sortlib
 
 func Bubblesort(ctx *SortCtx, data SortData) {
     dataCopy := data.copy()
-    n := dataCopy.len()
+    n := dataCopy.Len()
 
     ctx.title = "Bubble Sort"
     ctx.expectedOps = n * n // O(n**2)
@@ -11,7 +11,7 @@ func Bubblesort(ctx *SortCtx, data SortData) {
         highlights := make(map[int]int)
         for i := 0; i < n - 1; i++ {
             ctx.numberCompares++
-            if dataCopy.lt(i + 1, i) {
+            if dataCopy.Lt(i + 1, i) {
                 swappedSomething = true
                 dataCopy.swap(i, i + 1)
                 ctx.numberSwaps++

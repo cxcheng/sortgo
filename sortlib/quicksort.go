@@ -11,12 +11,12 @@ func findPartition(ctx *SortCtx, data SortData, lo int, hi int) int {
         highlights[lo + m] = 3
     }
     for {
-        for data.lt(i, pivotIndex) {
+        for data.Lt(i, pivotIndex) {
             // skip if already on the right side (< pivot)
             ctx.numberCompares++
             i++
         }
-        for data.gt(j, pivotIndex) {
+        for data.Gt(j, pivotIndex) {
             // skip if already on the right side (> pivot)
             ctx.numberCompares++
             j--
@@ -57,7 +57,7 @@ func quicksortPartition(ctx *SortCtx, data SortData, lo int, hi int) {
 
 func Quicksort(ctx *SortCtx, data SortData) {
     ctx.title = "Quick Sort"
-    n := data.len()
+    n := data.Len()
     ctx.expectedOps = int(float64(n) * math.Log(float64(n))) // O(n lg n)
     quicksortPartition(ctx, data, 0, n)
 }

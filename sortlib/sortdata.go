@@ -7,10 +7,10 @@ import "time"
 
 type SortData interface {
     copy() SortData
-    len() int
+    Len() int
     swap(i int, j int)
-    lt(i int, j int) bool
-    gt(i int, j int) bool
+    Lt(i int, j int) bool
+    Gt(i int, j int) bool
     print(highlights map[int]int)
 }
 
@@ -42,7 +42,7 @@ func (s ISortData) copy() SortData {
     return *t2
 }
 
-func (s ISortData) len() int {
+func (s ISortData) Len() int {
     return len(s.vals)
 }
 
@@ -50,11 +50,11 @@ func (s ISortData) swap(i int, j int) {
     s.vals[i], s.vals[j] = s.vals[j], s.vals[i]
 }
 
-func (s ISortData) lt(i int, j int) bool {
+func (s ISortData) Lt(i int, j int) bool {
     return s.vals[i] < s.vals[j]
 }
 
-func (s ISortData) gt(i int, j int) bool {
+func (s ISortData) Gt(i int, j int) bool {
     return s.vals[i] > s.vals[j]
 }
 

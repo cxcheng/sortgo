@@ -37,6 +37,14 @@ func (s *SortCtx) addSnapshot(data SortData, highlights map[int]int) *SortSnapsh
     return snapshot
 }
 
+func (s *SortCtx) SortedData() *SortData {
+    if len(s.snapshots) > 0 {
+        return &s.snapshots[len(s.snapshots) - 1].data
+    } else {
+        return nil
+    }
+}
+
 func (s *SortCtx) Print() {
     fmt.Println(s.title)
     for time, snapshot := range s.snapshots {
