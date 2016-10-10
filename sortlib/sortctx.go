@@ -10,6 +10,8 @@ type SortSnapshot struct {
 type SortCtx struct {
     title string
     snapshots []SortSnapshot
+    numberCompares int
+    numberSwaps int
     expectedOps int
 }
 
@@ -20,8 +22,7 @@ func NewSortCtx() SortCtx {
     return s
 }
 
-func (s SortCtx) addSnapshot(
-    data SortData, highlights map[int]int) *SortSnapshot {
+func (s *SortCtx) addSnapshot(data SortData, highlights map[int]int) *SortSnapshot {
     snapshot := new(SortSnapshot)
     snapshot.data = data.copy()
 
@@ -36,17 +37,13 @@ func (s SortCtx) addSnapshot(
     return snapshot
 }
 
-func (s SortCtx) Print() {
-    numberCompares := 0
-    numberSwaps := 0
+func (s *SortCtx) Print() {
     fmt.Println(s.title)
     for time, snapshot := range s.snapshots {
         fmt.Printf("%3d:", time)
         snapshot.data.print(snapshot.highlights)
-        numberCompares += snapshot.data.getNumberCompares()
-        numberSwaps += snapshot.data.getNumberSwaps()
     }
     fmt.Printf("Total: %d compares %d swaps, expected %d\n",
-        numberCompares, numberSwaps, s.expectedOps)
+        s.numberCompares, s.numberSwaps, s.expectedOps)
 }
 
