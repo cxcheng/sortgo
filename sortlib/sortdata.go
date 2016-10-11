@@ -9,6 +9,7 @@ type SortData interface {
     Copy() SortData
     Len() int
     Swap(i int, j int)
+    Eq(i int, j int) bool
     Lt(i int, j int) bool
     Gt(i int, j int) bool
     Print(highlights map[int]int)
@@ -44,6 +45,10 @@ func (s ISortData) Copy() SortData {
 
 func (s ISortData) Len() int {
     return len(s.vals)
+}
+
+func (s ISortData) Eq(i int, j int) bool {
+    return s.vals[i] == s.vals[j]
 }
 
 func (s ISortData) Lt(i int, j int) bool {
