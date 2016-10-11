@@ -29,15 +29,15 @@ func findPartition(ctx *SortCtx, data SortData, lo int, hi int, snapshots bool) 
                 pivotIndex = i
             }
             if snapshots {
-                // mark the partition in blue
+                // mark the partition in bold
                 highlights := make(map[int]int)
                 for m := 0; m < partition_size; m++ {
-                    highlights[lo + m] = 3
+                    highlights[lo + m] = 1
                 }
                 // overlay with the swapped values in red
                 highlights[i], highlights[j] = 2, 2
                 // overlay with pivot
-                highlights[pivotIndex] = 1
+                highlights[pivotIndex] = 3
                 // submit snapshot
                 ctx.addSnapshot(data, highlights)
             }

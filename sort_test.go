@@ -47,8 +47,8 @@ func BenchmarkBubblesort(b *testing.B) {
     var data sortlib.SortData
     var ctx sortlib.SortCtx
 
-    // generate array of random integers
-    data = sortlib.NewISortData(50000, 999)
+    // generate array of 1000 random integers
+    data = sortlib.NewISortData(5000, 999)
 
     // perform bubble sort
     ctx = sortlib.NewSortCtx()
@@ -61,8 +61,8 @@ func BenchmarkQuicksort(b *testing.B) {
     var data sortlib.SortData
     var ctx sortlib.SortCtx
 
-    // generate array of random integers
-    data = sortlib.NewISortData(50000, 999)
+    // generate array of 1000 random integers
+    data = sortlib.NewISortData(5000, 999)
 
     // perform bubble sort
     ctx = sortlib.NewSortCtx()
