@@ -14,13 +14,16 @@ func main() {
     // generate array of random integers
     data = sortlib.NewISortData(10, 999)
 
-    // perform bubble sort
-    ctx = sortlib.NewSortCtx()
-    sortlib.Bubblesort(&ctx, data.Copy(), true)
-    ctx.Print()
+    // define a list of sort functions to use
+    sortFuncs := []func(*sortlib.SortCtx, sortlib.SortData, bool){
+        sortlib.Bubblesort, sortlib.Quicksort,
+    }
 
-    // perform quicksort
-    ctx = sortlib.NewSortCtx()
-    sortlib.Quicksort(&ctx, data.Copy(), true)
-    ctx.Print()
+    // loop thru each function
+    for _, f := range(sortFuncs) {
+        // perform sort and print results
+        ctx = sortlib.NewSortCtx()
+        f(&ctx, data.Copy(), true)
+        ctx.Print()
+    }
 }
