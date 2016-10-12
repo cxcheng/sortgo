@@ -12,18 +12,13 @@ func main() {
     var ctx sortlib.SortCtx
 
     // generate array of random integers
-    data = sortlib.NewISortData(10, 999)
-
-    // define a list of sort functions to use
-    sortFuncs := []func(*sortlib.SortCtx, sortlib.SortData, bool){
-        sortlib.Bubblesort, sortlib.Quicksort,
-    }
+    data = sortlib.NewISortData(20, 999)
 
     // loop thru each function
-    for _, f := range(sortFuncs) {
+    for _, f := range(sortlib.SortFuncs) {
         // perform sort and print results
         ctx = sortlib.NewSortCtx()
-        f(&ctx, data.Copy(), true)
+        ctx.Sort(f, data.Copy(), true)
         ctx.Print()
     }
 }

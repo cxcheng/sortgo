@@ -1,46 +1,37 @@
 package main
 
+import "fmt"
 import "testing"
-import sortlib "github.com/cxcheng/sortgo/sortlib"
+import "github.com/cxcheng/sortgo/sortlib"
 
-func verifySorted(t *testing.T, sorted *sortlib.SortData) {
+func verifySorted(t *testing.T, ctx sortlib.SortCtx) {
     // check that results are sorted
-    sortedVal := *sorted
+    sortedVal := *ctx.SortedData()
     for i := 0; i < sortedVal.Len() - 1; i++ {
-        if !sortedVal.Lt(i, i + 1) {
+        if !sortedVal.Lt(i, i + 1) && !sortedVal.Eq(i, i + 1) {
+            fmt.Printf("Error: %s\n", ctx.Title())
+            sortedVal.Print(map[int]int{i:2, i+1:2,})
+            ctx.Print()
             t.Fail()
         }
     }
 }
 
-func TestBubblesort(t *testing.T) {
+func TestSorts(t *testing.T) {
     var data sortlib.SortData
     var ctx sortlib.SortCtx
 
     // generate array of random integers
-    data = sortlib.NewISortData(10, 999)
+    data = sortlib.NewISortData(20, 999)
 
-    // perform bubble sort
-    ctx = sortlib.NewSortCtx()
-    sortlib.Bubblesort(&ctx, data, true)
-
-    // check results
-    verifySorted(t, ctx.SortedData())
-}
-
-func TestQuicksort(t *testing.T) {
-    var data sortlib.SortData
-    var ctx sortlib.SortCtx
-
-    // generate array of random integers
-    data = sortlib.NewISortData(10, 999)
-
-    // perform bubble sort
-    ctx = sortlib.NewSortCtx()
-    sortlib.Quicksort(&ctx, data, true)
-
-    // check results
-    verifySorted(t, ctx.SortedData())
+    // loop thru each function
+    for _, f := range(sortlib.SortFuncs) {
+        // perform bubble sort
+        ctx = sortlib.NewSortCtx()
+        ctx.Sort(f, data.Copy(), true)
+        // check results
+        verifySorted(t, ctx)
+    }
 }
 
 func BenchmarkBubblesort(b *testing.B) {

@@ -18,7 +18,7 @@ func findPartition(ctx *SortCtx, data SortData, lo int, hi int, snapshots bool) 
             j--
         }
         if data.Eq(i, j) {
-            // we are done partitioning if i and j are the same
+           // we are done partitioning if i and j are the same
             break
         }  else if i < j {
             data.Swap(i, j)

@@ -2,6 +2,12 @@ package sortlib
 
 import "fmt"
 
+// List of sort functions
+var SortFuncs = []func(*SortCtx, SortData, bool) {
+    Bubblesort, Quicksort, Selectionsort,
+}
+
+
 type SortSnapshot struct {
     data SortData
     highlights map[int]int
@@ -22,7 +28,8 @@ func NewSortCtx() SortCtx {
     return s
 }
 
-func (s *SortCtx) addSnapshot(data SortData, highlights map[int]int) *SortSnapshot {
+func (s *SortCtx) addSnapshot(
+    data SortData, highlights map[int]int) *SortSnapshot {
     snapshot := new(SortSnapshot)
     snapshot.data = data.Copy()
 
@@ -37,12 +44,25 @@ func (s *SortCtx) addSnapshot(data SortData, highlights map[int]int) *SortSnapsh
     return snapshot
 }
 
+func (s *SortCtx) Sort(f func(*SortCtx, SortData, bool),
+        data SortData, snapshots bool) {
+    f(s, data, snapshots)
+    // if already sorted, add at least one snapshot
+    if snapshots && s.SortedData() == nil {
+        s.addSnapshot(data, make(map[int]int))
+    }
+}
+
 func (s *SortCtx) SortedData() *SortData {
     if len(s.snapshots) > 0 {
         return &s.snapshots[len(s.snapshots) - 1].data
     } else {
         return nil
     }
+}
+
+func (s *SortCtx) Title() string {
+    return s.title
 }
 
 func (s *SortCtx) Print() {
