@@ -30,6 +30,17 @@ func NewISortData(num int, max int) ISortData {
     return ISortData{ max: max, vals: vals }
 }
 
+func NewISortDataVals(vals []int) ISortData {
+    data := ISortData{}
+    copy(data.vals, vals)
+    for _, v := range(vals) {
+        if  v > data.max {
+            data.max = v
+        }
+    }
+    return data
+}
+
 func (s ISortData) Copy() SortData {
     // create a copy of the ISortData
     t := ISortData{}
