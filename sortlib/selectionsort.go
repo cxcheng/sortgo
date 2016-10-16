@@ -1,8 +1,8 @@
 package sortlib
 
-func Selectionsort(ctx *SortCtx, data SortData, snapshots bool) {
+func Selectionsort(ctx *SortCtx, vals []SortVal, snapshots bool) {
     ctx.title = "Selection Sort"
-    n := data.Len()
+    n := len(vals)
     ctx.expectedOps = n * n // O(n**2)
 
     var i, j int
@@ -16,19 +16,17 @@ func Selectionsort(ctx *SortCtx, data SortData, snapshots bool) {
         // test against elements after j to find the smallest
         for i = j + 1; i < n; i++ {
             // if this element is less, then it is the new minimum
-            ctx.numberCompares++
-            if data.Lt(i, iMin) {
+            if ctx.lt(i, iMin) {
                 // found new minimum; remember its index
                 iMin = i
             }
         }
         if iMin != j {
-            data.Swap(j, iMin)
-            ctx.numberSwaps++
+            ctx.swap(j, iMin)
             if snapshots {
                 // increment the number of swaps
                 // highlight the swapped items in red
-                ctx.addSnapshot(data, map[int]int{j:2, iMin:2,})
+                ctx.addSnapshot(map[int]int{j:2, iMin:2,})
             }
         }
     }

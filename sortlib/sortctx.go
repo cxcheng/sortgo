@@ -3,13 +3,19 @@ package sortlib
 import "fmt"
 
 // List of sort functions
-var SortFuncs = []func(*SortCtx, SortData, bool) {
+var SortFuncs = []func(*SortCtx, []SortVal, bool) {
     Bubblesort, Quicksort, Selectionsort,
 }
 
+type SortVal interface {
+    Eq(v SortVal) bool
+    Gt(v SortVal) bool
+    Lt(v SortVal) bool
+    Stringify() string
+}
 
 type SortSnapshot struct {
-    data SortData
+    vals []SortVal
     highlights map[int]int
 }
 
@@ -28,50 +34,119 @@ func NewSortCtx() SortCtx {
     return s
 }
 
-func (s *SortCtx) addSnapshot(
-    data SortData, highlights map[int]int) *SortSnapshot {
-    snapshot := new(SortSnapshot)
-    snapshot.data = data.Copy()
-
-    // copy the highlights
-    snapshot.highlights = make(map[int]int)
-    for k, v := range highlights {
-        snapshot.highlights[k] = v
-    }
-
-    // add it to the snapshot list
-    s.snapshots = append(s.snapshots, *snapshot)
-    return snapshot
-}
-
-func (s *SortCtx) Sort(f func(*SortCtx, SortData, bool),
-        data SortData, snapshots bool) {
-    f(s, data, snapshots)
-    // if already sorted, add at least one snapshot
-    if snapshots && s.SortedData() == nil {
-        s.addSnapshot(data, make(map[int]int))
-    }
-}
-
-func (s *SortCtx) SortedData() *SortData {
+func (s *SortCtx) LastSnapshot() *SortSnapshot {
     if len(s.snapshots) > 0 {
-        return &s.snapshots[len(s.snapshots) - 1].data
+        return &s.snapshots[len(s.snapshots) - 1]
     } else {
         return nil
     }
 }
 
-func (s *SortCtx) Title() string {
-    return s.title
+func (s *SortCtx) Sort(f func(*SortCtx, []SortVal, bool), vals []SortVal, snapshots bool) {
+    // add initial snapshot
+    snapshot := SortSnapshot{ vals: vals, highlights: nil }
+    s.snapshots = append(s.snapshots, snapshot)
+    // now sort
+    f(s, vals, snapshots)
 }
 
 func (s *SortCtx) Print() {
     fmt.Println(s.title)
     for time, snapshot := range s.snapshots {
         fmt.Printf("%3d:", time)
-        snapshot.data.Print(snapshot.highlights)
+        s.printSnapshot(snapshot, "%3d")
     }
     fmt.Printf("Total: %d compares %d swaps, expected %d\n",
         s.numberCompares, s.numberSwaps, s.expectedOps)
 }
 
+func (s *SortCtx) addSnapshot(highlights map[int]int) *SortSnapshot {
+    last := s.LastSnapshot()
+    if last != nil {
+        len2 := len((*last).vals)
+        vals2 := make([]SortVal, len2, len2)
+        copy(vals2, (*last).vals)
+        snapshot := SortSnapshot{ vals: vals2, highlights: highlights }
+
+        // copy the highlights
+        snapshot.highlights = make(map[int]int)
+        for k, v := range highlights {
+            snapshot.highlights[k] = v
+        }
+
+        // add it to the snapshot list
+        s.snapshots = append(s.snapshots, snapshot)
+        return &snapshot
+    } else {
+        return nil
+    }
+}
+
+func (s *SortCtx) printSnapshot(snapshot SortSnapshot, fmtStr string) {
+    const TEXT_RESET = "\033[0m"
+    const TEXT_BOLD = "\033[1m"
+    const TEXT_RED = "\033[31m"
+    const TEXT_BLUE = "\033[34m"
+
+    vals := snapshot.vals
+    for i, val := range vals {
+        fmt.Print(" ")
+        mode, isHighlighted := snapshot.highlights[i]
+        if isHighlighted {
+            switch mode {
+            case 1:
+                fmt.Print(TEXT_BOLD)
+            case 2:
+                fmt.Print(TEXT_RED)
+            case 3:
+                fmt.Print(TEXT_BLUE)
+            }
+        }
+        fmt.Printf(fmtStr, val.Stringify())
+        if isHighlighted {
+            fmt.Printf(TEXT_RESET) // reset to default
+        }
+    }
+    fmt.Println()
+}
+
+func (s *SortCtx) eq(i int, j int) bool {
+    snapshot := s.LastSnapshot()
+    if snapshot != nil {
+        s.numberCompares++
+        vals := snapshot.vals
+        return vals[i].Eq(vals[j])
+    } else {
+        return false
+    }
+}
+
+func (s *SortCtx) lt(i int, j int) bool {
+    snapshot := s.LastSnapshot()
+    if snapshot != nil {
+        s.numberCompares++
+        vals := snapshot.vals
+        return vals[i].Lt(vals[j])
+    } else {
+        return false
+    }
+}
+
+func (s *SortCtx) gt(i int, j int) bool {
+    snapshot := s.LastSnapshot()
+    if snapshot != nil {
+        s.numberCompares++
+        vals := snapshot.vals
+        return vals[i].Gt(vals[j])
+    } else {
+        return false
+    }
+}
+
+func (s *SortCtx) swap(i int, j int) {
+    snapshot := s.LastSnapshot()
+    if snapshot != nil {
+        s.numberSwaps++
+        snapshot.vals[i], snapshot.vals[j] = snapshot.vals[j], snapshot.vals[i]
+    }
+}
