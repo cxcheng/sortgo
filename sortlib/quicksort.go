@@ -7,21 +7,21 @@ func findPartition(ctx *SortCtx, vals []SortVal, lo int, hi int, snapshots bool)
     pivotIndex := lo
     i, j, partition_size := lo, hi - 1, hi - lo
     for  {
-        for ctx.lt(i, pivotIndex) {
+        for ctx.Lt(i, pivotIndex) {
             // skip if already on the right side (< pivot)
             ctx.numberCompares++
             i++
         }
-        for ctx.gt(j, pivotIndex) {
+        for ctx.Gt(j, pivotIndex) {
             // skip if already on the right side (> pivot)
             ctx.numberCompares++
             j--
         }
-        if ctx.eq(i, j) {
+        if ctx.Eq(i, j) {
            // we are done partitioning if i and j are the same
             break
         }  else if i < j {
-            ctx.swap(i, j)
+            ctx.Swap(i, j)
             if i == pivotIndex {
                 pivotIndex = j
             } else if j == pivotIndex {

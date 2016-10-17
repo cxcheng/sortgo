@@ -32,11 +32,15 @@ func (s ISortVal) Lt(v SortVal) bool {
     }
 }
 
-func (s ISortVal) Stringify() string {
+func (s ISortVal) SnapshotString() string {
     return strconv.Itoa(s.Val)
 }
 
-func GenerateISortVal(num int, max int) []SortVal {
+func (s ISortVal) ValueString() string {
+    return strconv.Itoa(s.Val)
+}
+
+func RandomISortVals(num int, max int) []SortVal {
     vals := make([]SortVal, num, num)
     s1 := rand.NewSource(time.Now().UnixNano())
     r1 := rand.New(s1)
@@ -46,7 +50,7 @@ func GenerateISortVal(num int, max int) []SortVal {
     return vals
 }
 
-func GenerateISortValFromInt(ints []int) []SortVal {
+func ISortVals(ints []int) []SortVal {
     vals := make([]SortVal, len(ints), len(ints))
     for i, v := range(ints) {
         vals[i] = ISortVal{ Val: v }

@@ -9,7 +9,7 @@ import sortlib "github.com/cxcheng/sortgo/sortlib"
 
 func main() {
     // generate array of random integers
-    vals := sortlib.GenerateISortVal(20, 999)
+    vals := sortlib.RandomISortVals(20, 999)
 
     // loop thru each function
     for _, f := range(sortlib.SortFuncs) {

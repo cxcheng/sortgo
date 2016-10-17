@@ -11,7 +11,8 @@ type SortVal interface {
     Eq(v SortVal) bool
     Gt(v SortVal) bool
     Lt(v SortVal) bool
-    Stringify() string
+    SnapshotString() string
+    ValueString() string
 }
 
 type SortSnapshot struct {
@@ -21,6 +22,7 @@ type SortSnapshot struct {
 
 type SortCtx struct {
     title string
+    fmtStr string
     snapshots []SortSnapshot
     numberCompares int
     numberSwaps int
@@ -50,11 +52,18 @@ func (s *SortCtx) Sort(f func(*SortCtx, []SortVal, bool), vals []SortVal, snapsh
     f(s, vals, snapshots)
 }
 
+func (s *SortCtx) Title() string {
+    return s.title
+}
+
 func (s *SortCtx) Print() {
     fmt.Println(s.title)
+    if s.fmtStr == "" {
+        s.fmtStr = "%3s"
+    }
     for time, snapshot := range s.snapshots {
         fmt.Printf("%3d:", time)
-        s.printSnapshot(snapshot, "%3d")
+        s.PrintSnapshot(snapshot)
     }
     fmt.Printf("Total: %d compares %d swaps, expected %d\n",
         s.numberCompares, s.numberSwaps, s.expectedOps)
@@ -82,7 +91,7 @@ func (s *SortCtx) addSnapshot(highlights map[int]int) *SortSnapshot {
     }
 }
 
-func (s *SortCtx) printSnapshot(snapshot SortSnapshot, fmtStr string) {
+func (s *SortCtx) PrintSnapshot(snapshot SortSnapshot) {
     const TEXT_RESET = "\033[0m"
     const TEXT_BOLD = "\033[1m"
     const TEXT_RED = "\033[31m"
@@ -102,7 +111,11 @@ func (s *SortCtx) printSnapshot(snapshot SortSnapshot, fmtStr string) {
                 fmt.Print(TEXT_BLUE)
             }
         }
-        fmt.Printf(fmtStr, val.Stringify())
+        if valStr := val.SnapshotString(); valStr == "" {
+            fmt.Printf("%2d", i)
+        } else {
+            fmt.Printf(s.fmtStr, valStr)
+        }
         if isHighlighted {
             fmt.Printf(TEXT_RESET) // reset to default
         }
@@ -110,7 +123,7 @@ func (s *SortCtx) printSnapshot(snapshot SortSnapshot, fmtStr string) {
     fmt.Println()
 }
 
-func (s *SortCtx) eq(i int, j int) bool {
+func (s *SortCtx) Eq(i int, j int) bool {
     snapshot := s.LastSnapshot()
     if snapshot != nil {
         s.numberCompares++
@@ -121,7 +134,7 @@ func (s *SortCtx) eq(i int, j int) bool {
     }
 }
 
-func (s *SortCtx) lt(i int, j int) bool {
+func (s *SortCtx) Lt(i int, j int) bool {
     snapshot := s.LastSnapshot()
     if snapshot != nil {
         s.numberCompares++
@@ -132,7 +145,7 @@ func (s *SortCtx) lt(i int, j int) bool {
     }
 }
 
-func (s *SortCtx) gt(i int, j int) bool {
+func (s *SortCtx) Gt(i int, j int) bool {
     snapshot := s.LastSnapshot()
     if snapshot != nil {
         s.numberCompares++
@@ -143,7 +156,7 @@ func (s *SortCtx) gt(i int, j int) bool {
     }
 }
 
-func (s *SortCtx) swap(i int, j int) {
+func (s *SortCtx) Swap(i int, j int) {
     snapshot := s.LastSnapshot()
     if snapshot != nil {
         s.numberSwaps++

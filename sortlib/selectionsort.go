@@ -16,13 +16,13 @@ func Selectionsort(ctx *SortCtx, vals []SortVal, snapshots bool) {
         // test against elements after j to find the smallest
         for i = j + 1; i < n; i++ {
             // if this element is less, then it is the new minimum
-            if ctx.lt(i, iMin) {
+            if ctx.Lt(i, iMin) {
                 // found new minimum; remember its index
                 iMin = i
             }
         }
         if iMin != j {
-            ctx.swap(j, iMin)
+            ctx.Swap(j, iMin)
             if snapshots {
                 // increment the number of swaps
                 // highlight the swapped items in red

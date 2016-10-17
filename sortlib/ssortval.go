@@ -28,7 +28,11 @@ func (s SSortVal) Lt(v SortVal) bool {
     }
 }
 
-func (s SSortVal) Stringify() string {
+func (s SSortVal) SnapshotString() string {
+    return ""
+}
+
+func (s SSortVal) ValueString() string {
     return s.Val
 }
 
