@@ -3,7 +3,7 @@ package sortlib
 import "fmt"
 
 // List of sort functions
-var SortFuncs = []func(*Ctx, []Val) {
+var SortFuncs = []func(*Ctx, *[]Val) {
     Bubblesort, Quicksort, Selectionsort,
 }
 
@@ -40,14 +40,11 @@ func (s *Ctx) LastSnapshot() Snapsort {
     return s.Snapshots[len(s.Snapshots) - 1]
 }
 
-func (s *Ctx) Sort(f func(*Ctx, []Val), vals []Val) {
+func (s *Ctx) Sort(f func(*Ctx, *[]Val), valsp *[]Val) {
     // add initial snapshot
-    s.addSnapshot(vals, nil)
-    // make a copy of the data and sort
-    vals2 := make([]Val, len(vals), len(vals))
-    copy(vals2, vals)
+    s.addSnapshot(*valsp, nil)
     // now sort
-    f(s, vals2)
+    f(s, valsp)
 }
 
 func (s *Ctx) Print() {

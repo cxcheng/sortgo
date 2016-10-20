@@ -44,10 +44,10 @@ func quicksortPartition(ctx *Ctx, valsp *[]Val, lo int, hi int,
     }
 }
 
-func Quicksort(ctx *Ctx, vals []Val) {
+func Quicksort(ctx *Ctx, valsp *[]Val) {
     ctx.Title = "Quick Sort"
-    n := len(vals)
+    n := len(*valsp)
     ctx.ExpectedOps = int(float64(n) * math.Log(float64(n))) // O(n lg n)
-    quicksortPartition(ctx, &vals, 0, n, 0)
+    quicksortPartition(ctx, valsp, 0, n, 0)
 }
 

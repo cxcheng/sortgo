@@ -9,11 +9,13 @@ func runSorts(t *testing.T, vals []sortlib.Val) {
     for _, f := range(sortlib.SortFuncs) {
         // perform bubble sort
         ctx := sortlib.NewCtx()
-        ctx.Sort(f, vals)
+        ctx.Sort(f, &vals)
         // check that results are sorted
         for i := 0; i < len(vals) - 1; i++ {
             if ctx.Lt(vals[i + 1], vals[i]) {
-                fmt.Printf("Error: %s at %d\n", ctx.Title, i)
+                fmt.Printf("Error: %s at %d, %s %s\n", ctx.Title, i,
+                    vals[i], vals[i + 1])
+                fmt.Println()
                 ctx.Print()
                 t.Fail()
             }
@@ -46,22 +48,22 @@ func TestSortsWithFixed(t *testing.T) {
 
 func BenchmarkBubblesort(b *testing.B) {
     // generate array of 1000 random integers
-    data := sortlib.RandomIVals(5000, 999)
+    vals := sortlib.RandomIVals(5000, 999)
 
     // perform bubble sort
     ctx := sortlib.NewCtx()
     b.StartTimer()
-    ctx.Sort(sortlib.Bubblesort, data)
+    ctx.Sort(sortlib.Bubblesort, &vals)
     b.StopTimer()
 }
 
 func BenchmarkQuicksort(b *testing.B) {
     // generate array of 1000 random integers
-    data := sortlib.RandomIVals(5000, 999)
+    vals := sortlib.RandomIVals(5000, 999)
 
     // perform bubble sort
     ctx := sortlib.NewCtx()
     b.StartTimer()
-    ctx.Sort(sortlib.Quicksort, data)
+    ctx.Sort(sortlib.Quicksort, &vals)
     b.StopTimer()
 }

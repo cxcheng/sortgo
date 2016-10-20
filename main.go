@@ -15,7 +15,9 @@ func main() {
     for _, f := range(sortlib.SortFuncs) {
         // perform sort and print results
         ctx := sortlib.NewCtx()
-        ctx.Sort(f, vals)
+        vals2 := make([]sortlib.Val, len(vals), len(vals))
+        copy(vals2, vals)
+        ctx.Sort(f, &vals2)
         ctx.Print()
     }
 }
