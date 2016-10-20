@@ -9,13 +9,13 @@ import sortlib "github.com/cxcheng/sortgo/sortlib"
 
 func main() {
     // generate array of random integers
-    vals := sortlib.RandomISortVals(20, 999)
+    vals := sortlib.RandomIVals(20, 999)
 
     // loop thru each function
     for _, f := range(sortlib.SortFuncs) {
         // perform sort and print results
-        ctx := sortlib.NewSortCtx()
-        ctx.Sort(f, vals, true)
+        ctx := sortlib.NewCtx()
+        ctx.Sort(f, vals)
         ctx.Print()
     }
 }

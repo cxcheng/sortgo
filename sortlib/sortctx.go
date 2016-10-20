@@ -3,163 +3,126 @@ package sortlib
 import "fmt"
 
 // List of sort functions
-var SortFuncs = []func(*SortCtx, []SortVal, bool) {
+var SortFuncs = []func(*Ctx, []Val) {
     Bubblesort, Quicksort, Selectionsort,
 }
 
-type SortVal interface {
-    Eq(v SortVal) bool
-    Gt(v SortVal) bool
-    Lt(v SortVal) bool
+type Val interface {
+    Eq(v Val) bool
+    Lt(v Val) bool
     SnapshotString() string
-    ValueString() string
+    String() string
 }
 
-type SortSnapshot struct {
-    vals []SortVal
+type Snapsort struct {
+    Vals []Val
     highlights map[int]int
 }
 
-type SortCtx struct {
-    title string
-    fmtStr string
-    snapshots []SortSnapshot
-    numberCompares int
-    numberSwaps int
-    expectedOps int
+type Ctx struct {
+    Title string
+    FmtStr string
+    Vals []Val
+    Snapshots []Snapsort
+    NumberCompares int
+    NumberSwaps int
+    ExpectedOps int
 }
 
-func NewSortCtx() SortCtx {
-    s := SortCtx {
-        snapshots: make([]SortSnapshot, 0, 200),
+func NewCtx() Ctx {
+    s := Ctx {
+        Snapshots: make([]Snapsort, 0, 200),
     }
     return s
 }
 
-func (s *SortCtx) LastSnapshot() *SortSnapshot {
-    if len(s.snapshots) > 0 {
-        return &s.snapshots[len(s.snapshots) - 1]
-    } else {
-        return nil
-    }
+func (s *Ctx) LastSnapshot() Snapsort {
+    return s.Snapshots[len(s.Snapshots) - 1]
 }
 
-func (s *SortCtx) Sort(f func(*SortCtx, []SortVal, bool), vals []SortVal, snapshots bool) {
+func (s *Ctx) Sort(f func(*Ctx, []Val), vals []Val) {
     // add initial snapshot
-    snapshot := SortSnapshot{ vals: vals, highlights: nil }
-    s.snapshots = append(s.snapshots, snapshot)
+    s.addSnapshot(vals, nil)
+    // make a copy of the data and sort
+    vals2 := make([]Val, len(vals), len(vals))
+    copy(vals2, vals)
     // now sort
-    f(s, vals, snapshots)
+    f(s, vals2)
 }
 
-func (s *SortCtx) Title() string {
-    return s.title
-}
-
-func (s *SortCtx) Print() {
-    fmt.Println(s.title)
-    if s.fmtStr == "" {
-        s.fmtStr = "%3s"
+func (s *Ctx) Print() {
+    fmt.Println(s.Title)
+    if s.FmtStr == "" {
+        s.FmtStr = "%3s"
     }
-    for time, snapshot := range s.snapshots {
+    for time, snapshot := range s.Snapshots {
         fmt.Printf("%3d:", time)
         s.PrintSnapshot(snapshot)
     }
     fmt.Printf("Total: %d compares %d swaps, expected %d\n",
-        s.numberCompares, s.numberSwaps, s.expectedOps)
+        s.NumberCompares, s.NumberSwaps, s.ExpectedOps)
 }
 
-func (s *SortCtx) addSnapshot(highlights map[int]int) *SortSnapshot {
-    last := s.LastSnapshot()
-    if last != nil {
-        len2 := len((*last).vals)
-        vals2 := make([]SortVal, len2, len2)
-        copy(vals2, (*last).vals)
-        snapshot := SortSnapshot{ vals: vals2, highlights: highlights }
+func (s *Ctx) addSnapshot(vals []Val, highlights map[int]int) {
+    // make a copy of the vals
+    n := len(vals)
+    vals2 := make([]Val, n, n)
+    copy(vals2, vals)
+    snapshot := Snapsort{ Vals: vals2, highlights: highlights }
 
-        // copy the highlights
-        snapshot.highlights = make(map[int]int)
-        for k, v := range highlights {
-            snapshot.highlights[k] = v
-        }
-
-        // add it to the snapshot list
-        s.snapshots = append(s.snapshots, snapshot)
-        return &snapshot
-    } else {
-        return nil
+    // copy the highlights
+    snapshot.highlights = make(map[int]int)
+    for k, v := range highlights {
+        snapshot.highlights[k] = v
     }
+
+    // add it to the snapshot list
+    s.Snapshots = append(s.Snapshots, snapshot)
 }
 
-func (s *SortCtx) PrintSnapshot(snapshot SortSnapshot) {
-    const TEXT_RESET = "\033[0m"
-    const TEXT_BOLD = "\033[1m"
-    const TEXT_RED = "\033[31m"
-    const TEXT_BLUE = "\033[34m"
+func (s *Ctx) PrintSnapshot(snapshot Snapsort) {
+    const TextReset = "\033[0m"
+    const TextBold = "\033[1m"
+    const TextRed = "\033[31m"
+    const TextBlue = "\033[34m"
 
-    vals := snapshot.vals
+    vals := snapshot.Vals
     for i, val := range vals {
         fmt.Print(" ")
         mode, isHighlighted := snapshot.highlights[i]
         if isHighlighted {
             switch mode {
             case 1:
-                fmt.Print(TEXT_BOLD)
+                fmt.Print(TextBold)
             case 2:
-                fmt.Print(TEXT_RED)
+                fmt.Print(TextRed)
             case 3:
-                fmt.Print(TEXT_BLUE)
+                fmt.Print(TextBlue)
             }
         }
         if valStr := val.SnapshotString(); valStr == "" {
             fmt.Printf("%2d", i)
         } else {
-            fmt.Printf(s.fmtStr, valStr)
+            fmt.Printf(s.FmtStr, valStr)
         }
         if isHighlighted {
-            fmt.Printf(TEXT_RESET) // reset to default
+            fmt.Printf(TextReset) // reset to default
         }
     }
     fmt.Println()
 }
 
-func (s *SortCtx) Eq(i int, j int) bool {
-    snapshot := s.LastSnapshot()
-    if snapshot != nil {
-        s.numberCompares++
-        vals := snapshot.vals
-        return vals[i].Eq(vals[j])
-    } else {
-        return false
-    }
+func (s *Ctx) Gt(v1 Val, v2 Val) bool {
+    s.NumberCompares++
+    return !v1.Eq(v2) && !v1.Lt(v2)
 }
 
-func (s *SortCtx) Lt(i int, j int) bool {
-    snapshot := s.LastSnapshot()
-    if snapshot != nil {
-        s.numberCompares++
-        vals := snapshot.vals
-        return vals[i].Lt(vals[j])
-    } else {
-        return false
-    }
+func (s *Ctx) Lt(v1 Val, v2 Val) bool {
+    s.NumberCompares++
+    return v1.Lt(v2)
 }
 
-func (s *SortCtx) Gt(i int, j int) bool {
-    snapshot := s.LastSnapshot()
-    if snapshot != nil {
-        s.numberCompares++
-        vals := snapshot.vals
-        return vals[i].Gt(vals[j])
-    } else {
-        return false
-    }
-}
-
-func (s *SortCtx) Swap(i int, j int) {
-    snapshot := s.LastSnapshot()
-    if snapshot != nil {
-        s.numberSwaps++
-        snapshot.vals[i], snapshot.vals[j] = snapshot.vals[j], snapshot.vals[i]
-    }
+func (s *Ctx) Swap(valsp *[]Val, i int, j int) {
+    s.NumberSwaps++
+    (*valsp)[i], (*valsp)[j] = (*valsp)[j], (*valsp)[i]
 }

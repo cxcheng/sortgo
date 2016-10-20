@@ -1,38 +1,30 @@
 package sortlib
 
-type SSortVal struct {
+type SVal struct {
     Val string
 }
 
-func (s SSortVal) Eq(v SortVal) bool {
-    if v2, ok := v.(SSortVal); ok {
+func (s SVal) Eq(v Val) bool {
+    if v2, ok := v.(SVal); ok {
         return s.Val == v2.Val
     } else {
         return false
     }
 }
 
-func (s SSortVal) Gt(v SortVal) bool {
-    if v2, ok := v.(SSortVal); ok {
-        return s.Val > v2.Val
-    } else {
-        return false
-    }
-}
-
-func (s SSortVal) Lt(v SortVal) bool {
-    if v2, ok := v.(SSortVal); ok {
+func (s SVal) Lt(v Val) bool {
+    if v2, ok := v.(SVal); ok {
         return s.Val < v2.Val
     } else {
         return false
     }
 }
 
-func (s SSortVal) SnapshotString() string {
+func (s SVal) SnapshotString() string {
     return ""
 }
 
-func (s SSortVal) ValueString() string {
+func (s SVal) String() string {
     return s.Val
 }
 

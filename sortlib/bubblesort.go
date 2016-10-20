@@ -1,21 +1,19 @@
 package sortlib
 
-func Bubblesort(ctx *SortCtx, vals []SortVal, snapshots bool) {
-    ctx.title = "Bubble Sort"
+func Bubblesort(ctx *Ctx, vals []Val) {
+    ctx.Title = "Bubble Sort"
     n := len(vals)
-    ctx.expectedOps = n * n // O(n**2)
+    ctx.ExpectedOps = n * n // O(n**2)
 
     for swappedSomething := true; swappedSomething; {
         swappedSomething = false
         for i := 0; i < n - 1; i++ {
-            if ctx.Lt(i + 1, i) {
+            if ctx.Lt(vals[i + 1], vals[i]) {
                 swappedSomething = true
-                ctx.Swap(i, i + 1)
-                if snapshots {
-                    // increment the number of swaps
-                    // highlight the swapped items in red
-                    ctx.addSnapshot(map[int]int{i:2, i+1:2,})
-                }
+                ctx.Swap(&vals, i, i + 1)
+                // increment the number of swaps
+                // highlight the swapped items in red
+                ctx.addSnapshot(vals, map[int]int{i:2, i+1:2,})
             }
         }
     }
