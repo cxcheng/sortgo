@@ -46,6 +46,17 @@ func TestSortsWithFixed(t *testing.T) {
     }
 }
 
+func TestSortsWithFixedStr(t *testing.T) {
+    valsArr := [...][]string {
+        []string {},
+        []string { "abc" },
+        []string { "abc", "def", "jkl" },
+    }
+    for _, vals := range(valsArr) {
+        // run through the sorting with array of pre-defined numbers that were known to cause issues
+        runSorts(t, sortlib.SVals(vals))
+    }
+}
 func BenchmarkBubblesort(b *testing.B) {
     // generate array of 1000 random integers
     vals := sortlib.RandomIVals(5000, 999)

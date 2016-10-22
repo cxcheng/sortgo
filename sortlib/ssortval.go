@@ -1,5 +1,8 @@
 package sortlib
 
+ import "bufio"
+ import "os"
+
 type SVal struct {
     Val string
 }
@@ -28,3 +31,27 @@ func (s SVal) String() string {
     return s.Val
 }
 
+func SVals(strs []string) []Val {
+    vals := make([]Val, len(strs), len(strs))
+    for i, v := range(strs) {
+        vals[i] = SVal{ Val: v }
+    }
+    return vals
+}
+
+func SValsFromFile(path string) []Val {
+    vals := make([]Val, 0, 1000)
+    file, err := os.Open(path)
+    if err != nil {
+        return vals
+    }
+    defer file.Close()
+
+    scanner := bufio.NewScanner(file)
+    for scanner.Scan() {
+        if str := scanner.Text(); len(str) > 0 {
+            vals = append(vals, SVal{ Val: str})
+        }
+    }
+    return vals
+}

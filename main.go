@@ -5,13 +5,20 @@
 
 package main
 
-import sortlib "github.com/cxcheng/sortgo/sortlib"
+import "fmt"
+import "github.com/cxcheng/sortgo/sortlib"
+
+func printVals(label string, vals []sortlib.Val) {
+    fmt.Print(label, ":")
+    for _, val := range(vals) {
+        fmt.Print(" ", val.String())
+    }
+    fmt.Println()
+}
 
 func main() {
-    // generate array of random integers
+    // generate array of random integers and loop through each sort function
     vals := sortlib.RandomIVals(20, 999)
-
-    // loop thru each function
     for _, f := range(sortlib.SortFuncs) {
         // perform sort and print results
         ctx := sortlib.NewCtx()
@@ -19,5 +26,18 @@ func main() {
         copy(vals2, vals)
         ctx.Sort(f, &vals2)
         ctx.Print()
+    }
+
+    // test the strings
+    svals := sortlib.SValsFromFile("text/planets.txt")
+    for _, f := range(sortlib.SortFuncs) {
+        // perform sort and print results
+        ctx := sortlib.NewCtx()
+        svals2 := make([]sortlib.Val, len(svals), len(svals))
+        copy(svals2, svals)
+        printVals("Before", svals2)
+        ctx.Sort(f, &svals2)
+        ctx.Print()
+        printVals("After", svals2)
     }
 }
