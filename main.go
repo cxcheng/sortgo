@@ -29,7 +29,7 @@ func main() {
     }
 
     // test the strings
-    svals := sortlib.SValsFromFile("text/planets.txt")
+    svals := sortlib.SValsFromFile("text/2planets.txt")
     for _, f := range(sortlib.SortFuncs) {
         // perform sort and print results
         ctx := sortlib.NewCtx()

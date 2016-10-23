@@ -1,7 +1,8 @@
 package sortlib
 
- import "bufio"
- import "os"
+import "bufio"
+import "log"
+import "os"
 
 type SVal struct {
     Val string
@@ -43,6 +44,7 @@ func SValsFromFile(path string) []Val {
     vals := make([]Val, 0, 1000)
     file, err := os.Open(path)
     if err != nil {
+        log.Fatal(err)
         return vals
     }
     defer file.Close()
